@@ -6,7 +6,7 @@ parameters{
     string(name: 'aks_name', defaultValue: '', description: 'Cluster name')
     string(name: 'rg_name', defaultValue: '', description: 'Resource group name')
     choice(
-        choices: ['kubernetes_yaml/java.yaml','kubernetes_yaml/nodejs.yaml'],
+        choices: ['./kubernetes_yamls/java.yaml','./kubernetes_yamls/nodejs.yaml'],
         description: 'Select yaml to deploy',
         name: 'SELECTED_YAML'
     )
@@ -15,6 +15,7 @@ podTemplate(containers: [
     containerTemplate(name: 'azcli', image: 'mcr.microsoft.com/azure-cli', ttyEnabled: true, command: 'cat')
 ]){
     node(POD_LABEL) {
+        git https://github.com/Gabmetal/intercorp-challenge.git
         container('azcli') {
             stage('Login in Azure and get kubernetes credentials') {
                     sh '''
