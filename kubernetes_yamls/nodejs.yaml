@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: ca-webapp
+spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        label: webapp
+    revisionHistoryLimit: 3
+    template:
+        metadata:
+            labels:
+                role: frontend
+                label: webapp
+        spec:
+            containers:
+                - name: ca-webapp
+                  image: cienciaargentina/webapp
+                  imagePullPolicy: Always
+                  ports:
+                    - containerPort: 3000
+                  resources:
+                    limits:
+                      cpu: "200m"
+                      memory: "200Mi"
+                  env:
+                  - name: CIENCIA_ARGENTINA_HOST
+                    value: "https://api.cienciaargentina.dev"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: ca-webapp-svc
+spec:
+    ports:
+    -   port: 80
+        targetPort: 3000
+        protocol: TCP
+        name: http
+    selector:
+        label: webapp
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+    name: ca-webapp-hpa
+spec:
+    maxReplicas: 3
+    minReplicas: 1
+    scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: ca-webapp
+    targetCPUUtilizationPercentage: 80
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ca-webapp
+  annotations: 
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: intercorpcllng.eastus2.cloudapp.azure.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: ca-webapp-svc
+          servicePort: 80
