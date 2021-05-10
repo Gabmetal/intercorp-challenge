@@ -29,13 +29,17 @@ export saname="tfstatestgacc" # Name of the container inside the storage account
 # Name of the container inside the storage account that will contain the tfstate
 export contname="tfstatecontainer" # Name of the container inside the storage account that will contain the tfstate
 ```
+
 2- Create the storage account in azure:
+
 ````bash
 az group create -l $(location) --name $(sarg)
 az storage account create --name $(saname) -g $(sarg) -l $(location) --sku "Standard_LRS" 
 az storage container create -n $(contname) --account-name $(saname)
 ```
+
 3- Add the backend to the terraform configuration in the `providers.tf` file replacing the tokens (values between #{}# by the ones declared in the variables)
+
 ```
 terraform {
   required_providers {
@@ -50,6 +54,7 @@ terraform {
   }
 }
 ```
+
 # Logging into the cluster and jenkins
 To login to the cluster we will have to connect to azure from the cli:
 `az login`
@@ -72,8 +77,10 @@ And finally to see all the resources that are running in the cluster we execute:
 in this case we will be able to see the jenkins service running in the `default` namespace and its public ip.
 
 For example:
+
 ```
 NAMESPACE NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE
 default service/jenkins LoadBalancer 10.0.128.15 20.75.69.7 80:32465/TCP,443:31719/TCP 11m
 ```
+
 now we can go to the browser and type the EXTERNAL-IP to access jenkins using the username and password we declared in the `terraform.tfvars` file.
