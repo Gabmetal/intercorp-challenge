@@ -15,15 +15,17 @@ podTemplate(containers: [
     containerTemplate(name: 'azcli', image: 'mcr.microsoft.com/azure-cli', ttyEnabled: true, command: 'cat')
 ]){
     node(POD_LABEL) {
-        git https://github.com/Gabmetal/intercorp-challenge.git
+        git branch: 'main', url: 'https://github.com/Gabmetal/intercorp-challenge.git'
         container('azcli') {
             stage('Login in Azure and get kubernetes credentials') {
                     sh '''
+                    ls -la
                     az login --service-principal --username $sp_appid --password $sp_apppwd --tenant $sp_tenantid
                     az account set -s $sp_subscriptionid
                     az aks get-credentials -n $aks_name -g $rg_name
                     az aks install-cli
-                    kubectl apply -f $SELECTED_YAML
+                    kubectl create ns app
+                    kubectl apply -f $SELECTED_YAML -n app
                     '''
             }
         }

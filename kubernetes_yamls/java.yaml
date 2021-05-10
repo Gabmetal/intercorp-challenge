@@ -39,6 +39,19 @@ spec:
     targetPort: 8080
   selector:
     app: spring-boot-demo
-  type: LoadBalancer
-status:
-  loadBalancer: {}
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: spring-boot-demo
+  annotations: 
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /java
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /java
+        backend:
+          serviceName: spring-boot-demo
+          servicePort: 8080
