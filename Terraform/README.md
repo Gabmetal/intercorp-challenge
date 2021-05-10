@@ -52,17 +52,24 @@ terraform {
 # Ingresando al cluster y a jenkins
 Para ingresar al cluster deberemos conectarnos a azure desde la cli:
 `az login`
+
 Seleccionamos la subscription en donde desplegamos el cluster, para esto podemos listar las subs con el comando 
 `az account list -o table` 
+
 y de no figurarnos como true en la columna `IsDefault` podemos setearla con el comando 
 `az account set -s <ID_DE_LA_SUB>`
+
 Luego podemos listar los clusteres en esa sub con el comando 
 `az aks list -o table`
+
 y obtener las credenciales con
 `az aks get-credentials -n <NombreDelCluster> -g <ResourceGroupDelCluster>`
+
 Y finalmente para ver todos los recursos que están corriendo en el cluster ejecutamos:
 `kubectl get all -A`
+
 en este caso podremos ver el service de jenkins corriendo en el namespace `default` y su ip pública.
+
 Por ejemplo:
 ```
 NAMESPACE     NAME                     TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
