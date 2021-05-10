@@ -27,7 +27,6 @@ status: {}
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
   labels:
     app: spring-boot-demo
   name: spring-boot-demo
@@ -37,6 +36,7 @@ spec:
     port: 8080
     protocol: TCP
     targetPort: 8080
+  type: ClusterIP
   selector:
     app: spring-boot-demo
 ---
