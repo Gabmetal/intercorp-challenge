@@ -1,5 +1,5 @@
 resource "helm_release" "jenkins" {
-  name       = "JenkinsK8S"
+  name       = "jenkins"
   repository = "https://marketplace.azurecr.io/helm/v1/repo"
   chart      = "jenkins"
 

@@ -1,3 +1,23 @@
+variable "tenant_id" {
+    type = string
+    description = "Valor del Tenant ID"
+}
+
+variable "subscription_id" {
+    type = string
+    description = "Valor de Subscription ID de azure"
+}
+
+variable "serviceprincipal_id" {
+    type = string
+    description = "Valor de serviceprincipal id azure"
+}
+
+variable "serviceprincipal_key" {
+    type = string
+    description = "Valor de serviceprincipal key azure"
+}
+
 variable "prefix" {
     type = string
     description = "Prefijo para nombre de recursos"
@@ -20,7 +40,7 @@ variable "kubernetes_version" {
 }
 
 variable "node_count" {
-    type = string
+    type = number
     description = "Cantidad de nodos en el pool"
 }
 
@@ -35,7 +55,7 @@ variable "vm_type" {
 }
 
 variable "tags" {
-    type = "map"
+    type = map(string)
     description = "Tags para los recursos"
 }
 

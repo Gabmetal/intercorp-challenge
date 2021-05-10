@@ -35,6 +35,6 @@ variable "vm_type" {
 }
 
 variable "tags" {
-    type = "map"
+    type = map(string)
     description = "Tags para los recursos"
 }
