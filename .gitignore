@@ -1,0 +1,7 @@
+**/.terraform/*
+**/.terraform.tfstate
+**/.terraform.lock.hcl
+**/my.tfvars
+**/private_ssh_key
+**/terraform.tfstate
+**/terraform.tfstate.backup
