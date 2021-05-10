@@ -1,33 +1,34 @@
-# intercorp-challenge
+Versión en español: https://github.com/Gabmetal/intercorp-challenge/blob/main/README_ES.md
+## intercorp-challenge
 
-## Estructura de carpetas:
+## Folder structure:
 ### root:
-En el root del repositorio se encontrará el archivo `Jenkinsfile` el cual deberá ser utilizado por el pipeline de jenkins para desplegar los recursos en kubernetes.
-También se encontrarán las siguientes carpetas:
+In the repository root you will find the `Jenkinsfile` file which should be used by the jenkins pipeline to deploy resources to kubernetes.
+You will also find the following folders:
 ### kubernetes_yamls
-En esta carpeta estan los dos yamls para desplegar las aplicaciones en java y nodejs con sus respectivos hpa, services e ingress.
+In this folder are the two yamls to deploy the java and nodejs applications with their respective hpa, services and ingress.
 ### Terraform
-En esta carpeta se encuentran los módulos de terraform para desplegar el cluster, jenkins y nginx como ingress.
+In this folder are the terraform modules to deploy the cluster, jenkins and nginx as ingress.
 
-# Configuracion de jenkins para correr pipelines.
-1- Ingresar a jenkins:
-Para ingresar a jenkins necesitaremos conocer la ip del servicio desplegado en kubernetes, para esto debemos ejecutar el comando `kubectl get svc -n jenkins` y copiar la EXTERNAL-IP.
-Utilizar el usuario y contraseña definido en el archivo `terraform.tfvars`
+# Configuration of jenkins to run pipelines.
+1- Login to jenkins:
+To login to jenkins we will need to know the ip of the service deployed in kubernetes, for this we must execute the command `kubectl get svc -n jenkins` and copy the EXTERNAL-IP.
+Use the user and password defined in the `terraform.tfvars` file.
 
-2- ingresar al menu "administrar jenkins" y actualizarlo si es necesario (A Jenkins y sus plugins)
+2- enter the menu "manage jenkins" and update it if necessary (To Jenkins and it's plugins)
 
-3- instalar plugin de kubernetes (documentación https://github.com/jenkinsci/kubernetes-plugin)
+3- install kubernetes plugin (documentation https://github.com/jenkinsci/kubernetes-plugin)
 
-4- configurar kubernetes como cloud:
-   Para esto deberemos ingresar a adminsitrar jenkins -> Configure System -> Cloud -> Add new -> select 'Kubernetes'
-   e ingresar los datos solicitados, en este caso solo es necesario cargar la url del api server y la ip interna de jenkins.
+4- configure kubernetes as cloud:
+   For this we will have to enter adminsitrar jenkins -> Configure System -> Cloud -> Add new -> select 'Kubernetes' and enter the requested data.
+   and enter the requested data, in this case it is only necessary to load the url of the api server and the internal ip of jenkins.
 
-5- Agregar el puerto 38489 a la configuración de jenkins
-   Panel de Control -> Configuración global de la seguridad -> Agents
+5- Add port 38489 to the jenkins configuration
+   Control Panel -> Global security configuration -> Agents
 
-6- Agregar el puerto al service de kubernetes:
+6- Add the port to the kubernetes service:
    kubectl edit service/jenkins -n jenkins
-   y en la seccion de puertos agregar el siguiente elemento:
+   and in the ports section add the following item:
 ```
 - name: jenkinsagent
   port: 38489
@@ -35,8 +36,10 @@ Utilizar el usuario y contraseña definido en el archivo `terraform.tfvars`
   protocol: TCP
 ```
 
-7- Crear un nuevo job del tipo multibranch pipeline, seleccionar Jenkinsfile from SCM. Agregar la url del repositorio y los parámetros solicitados por el Jenkinsfile.
+7- Create a new job of type multibranch pipeline, select Jenkinsfile from SCM. Add the url of the repository and the parameters requested by the Jenkinsfile.
 
-8- Ejecutar el pipeline en "Correr con parámetros"
+8- Execute the pipeline in "Run with parameters".
 
-9- Completar los parámetros y ejecutar.
+9- Complete the parameters and execute.
+
+Translated with www.DeepL.com/Translator (free version)

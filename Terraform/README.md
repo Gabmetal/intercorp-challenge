@@ -1,78 +1,79 @@
-# Terraform module
-## Despliegue del cluster AKS y Jenkins
-Este modulo de terraform despliega un cluster de kubernetes en Azure e instala el chart de jenkins en él.
+Versión en español: https://github.com/Gabmetal/intercorp-challenge/blob/main/Terraform/README_ES.md
+## Terraform module
+## AKS and Jenkins cluster deployment
+This terraform module deploys a kubernetes cluster to Azure and installs the jenkins chart on it.
 
-Para lograr esto es necesario rellenar el archivo `terraform.tfvars` con los valores necesarios para la conexión a Azure.
+To accomplish this you need to populate the `terraform.tfvars` file with the values needed for the Azure connection.
 ```
 subscription_id = 
 serviceprincipal_id = 
 serviceprincipal_key = 
 tenant_id = 
 ```
-Parados en la carpeta root donde se encuentra el `main.tf` ejecutar el comando:
+Standing in the root folder where the `main.tf` is located run the command:
 `terraform init`
-para cargar y configurar los módulos y luego
-`terraform apply --auto-approve`
-para empezar a desplegar los recursos.
+to load and configure the modules and then
+`terraform apply --auto-approve` to start deploying the resources.
+to start deploying the resources.
 
-Cabe aclarar que en este caso el tfstate no se esta guardando en forma remota, sino que, en el equipo en el que se está ejecutando. Para guardar el estado en un storage account es necesario realizar lo siguiente:
+It should be noted that in this case the tfstate is not being saved remotely, but on the computer where it is running. To save the state in a storage account it is necessary to do the following:
 
-1- Configurar variables de entorno:
-```bash
-# Location para el resoruce group
+1- Configure environment variables:
+````bash
+# Location for the resoruce group
 export location="eastus2"
-# Nombre del resource Group
+# Name of the resource Group
 export sarg="tfstaterg"
-# Nombre del storage account
-export saname="tfstatestgacc"
-# Nombre del container dentro del storage account que contendrá el tfstate
-export contname="tfstatecontainer"
+# Name of the storage account
+export saname="tfstatestgacc" # Name of the container inside the storage account that will contain the tfstatestgacc
+# Name of the container inside the storage account that will contain the tfstate
+export contname="tfstatecontainer" # Name of the container inside the storage account that will contain the tfstate
 ```
-2- Crear el storage account en azure:
-```bash
+2- Create the storage account in azure:
+````bash
 az group create -l $(location) --name $(sarg)
 az storage account create --name $(saname) -g $(sarg) -l $(location) --sku "Standard_LRS" 
 az storage container create -n $(contname) --account-name $(saname)
 ```
-3- Agregar el backend a la configuración de terraform en el archivo `providers.tf` reemplazando los tokens (valores entre #{}# por los declarados en las variables)
+3- Add the backend to the terraform configuration in the `providers.tf` file replacing the tokens (values between #{}# by the ones declared in the variables)
 ```
 terraform {
   required_providers {
     ...
     }
-  backend  "azurerm" {
-    resource_group_name  = "#{sarg}#"
+  backend "azurerm" {
+    resource_group_name = "#{sarg}#"
     storage_account_name = "#{saname}#"
-    container_name       = "#{contname}#"
-    key                  = "terraform.tfstate"
-    access_key           = "#{sakey}#"
+    container_name = "#{contname}#"
+    key = "terraform.tfstate"
+    access_key = "#{sakey}#"
   }
 }
 ```
-# Ingresando al cluster y a jenkins
-Para ingresar al cluster deberemos conectarnos a azure desde la cli:
+# Logging into the cluster and jenkins
+To login to the cluster we will have to connect to azure from the cli:
 `az login`
 
-Seleccionamos la subscription en donde desplegamos el cluster, para esto podemos listar las subs con el comando 
+We select the subscription where we deploy the cluster, for this we can list the subs with the command 
 `az account list -o table` 
 
-y de no figurarnos como true en la columna `IsDefault` podemos setearla con el comando 
-`az account set -s <ID_DE_LA_SUB>`
+and if the `IsDefault` column is not set to true, we can set it with the command 
+`az account set -s <ID_DE_LA_SUB>` command.
 
-Luego podemos listar los clusteres en esa sub con el comando 
+Then we can list the clusters in that sub with the command 
 `az aks list -o table`
 
-y obtener las credenciales con
-`az aks get-credentials -n <NombreDelCluster> -g <ResourceGroupDelCluster>`
+and get the credentials with
+`az aks get-credentials -n <ClusterName> -g <ClusterResourceGroup>``.
 
-Y finalmente para ver todos los recursos que están corriendo en el cluster ejecutamos:
+And finally to see all the resources that are running in the cluster we execute:
 `kubectl get all -A`
 
-en este caso podremos ver el service de jenkins corriendo en el namespace `default` y su ip pública.
+in this case we will be able to see the jenkins service running in the `default` namespace and its public ip.
 
-Por ejemplo:
+For example:
 ```
-NAMESPACE     NAME                     TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
-default       service/jenkins          LoadBalancer   10.0.128.15    20.75.69.7    80:32465/TCP,443:31719/TCP   11m
+NAMESPACE NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE
+default service/jenkins LoadBalancer 10.0.128.15 20.75.69.7 80:32465/TCP,443:31719/TCP 11m
 ```
-ahora podemos ir al browser y tipear la EXTERNAL-IP para acceder a jenkins utilizando el usuario y contraseña que declaramos en el archivo `terraform.tfvars`
+now we can go to the browser and type the EXTERNAL-IP to access jenkins using the username and password we declared in the `terraform.tfvars` file.
