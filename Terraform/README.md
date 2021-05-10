@@ -4,12 +4,14 @@ Versión en español: https://github.com/Gabmetal/intercorp-challenge/blob/main/
 This terraform module deploys a kubernetes cluster to Azure and installs the jenkins chart on it.
 
 To accomplish this you need to populate the `terraform.tfvars` file with the values needed for the Azure connection.
+
 ```
 subscription_id = 
 serviceprincipal_id = 
 serviceprincipal_key = 
 tenant_id = 
 ```
+
 Standing in the root folder where the `main.tf` is located run the command:
 `terraform init`
 to load and configure the modules and then
@@ -19,7 +21,8 @@ to start deploying the resources.
 It should be noted that in this case the tfstate is not being saved remotely, but on the computer where it is running. To save the state in a storage account it is necessary to do the following:
 
 1- Configure environment variables:
-````bash
+
+```bash
 # Location for the resoruce group
 export location="eastus2"
 # Name of the resource Group
@@ -32,7 +35,7 @@ export contname="tfstatecontainer" # Name of the container inside the storage ac
 
 2- Create the storage account in azure:
 
-````bash
+```bash
 az group create -l $(location) --name $(sarg)
 az storage account create --name $(saname) -g $(sarg) -l $(location) --sku "Standard_LRS" 
 az storage container create -n $(contname) --account-name $(saname)
